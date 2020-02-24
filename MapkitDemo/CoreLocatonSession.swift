@@ -10,18 +10,18 @@ import Foundation
 import CoreLocation
 
 struct Location {
-  let title: String
-  let body: String
-  let coordinate: CLLocationCoordinate2D
-  let imageName: String
-  
-  static func getLocations() -> [Location] {
-    return [
-      Location(title: "Pursuit", body: "We train adults with the most need and potential to get hired in tech, advance in their careers, and become the next generation of leaders in tech.", coordinate: CLLocationCoordinate2D(latitude: 40.74296, longitude: -73.94411), imageName: "team-6-3"),
-      Location(title: "Brooklyn Museum", body: "The Brooklyn Museum is an art museum located in the New York City borough of Brooklyn. At 560,000 square feet (52,000 m2), the museum is New York City's third largest in physical size and holds an art collection with roughly 1.5 million works", coordinate: CLLocationCoordinate2D(latitude: 40.6712062, longitude: -73.9658193), imageName: "brooklyn-museum"),
-      Location(title: "Central Park", body: "Central Park is an urban park in Manhattan, New York City, located between the Upper West Side and the Upper East Side. It is the fifth-largest park in New York City by area, covering 843 acres (3.41 km2). Central Park is the most visited urban park in the United States, with an estimated 37.5–38 million visitors annually, as well as one of the most filmed locations in the world.", coordinate: CLLocationCoordinate2D(latitude: 40.7828647, longitude: -73.9675438), imageName: "central-park")
-    ]
-  }
+    let title: String
+    let body: String
+    let coordinate: CLLocationCoordinate2D
+    let imageName: String
+    
+    static func getLocations() -> [Location] {
+        return [
+            Location(title: "Pursuit", body: "We train adults with the most need and potential to get hired in tech, advance in their careers, and become the next generation of leaders in tech.", coordinate: CLLocationCoordinate2D(latitude: 40.74296, longitude: -73.94411), imageName: "team-6-3"),
+            Location(title: "Brooklyn Museum", body: "The Brooklyn Museum is an art museum located in the New York City borough of Brooklyn. At 560,000 square feet (52,000 m2), the museum is New York City's third largest in physical size and holds an art collection with roughly 1.5 million works", coordinate: CLLocationCoordinate2D(latitude: 40.6712062, longitude: -73.9658193), imageName: "brooklyn-museum"),
+            Location(title: "Central Park", body: "Central Park is an urban park in Manhattan, New York City, located between the Upper West Side and the Upper East Side. It is the fifth-largest park in New York City by area, covering 843 acres (3.41 km2). Central Park is the most visited urban park in the United States, with an estimated 37.5–38 million visitors annually, as well as one of the most filmed locations in the world.", coordinate: CLLocationCoordinate2D(latitude: 40.7828647, longitude: -73.9675438), imageName: "central-park")
+        ]
+    }
 }
 
 class CoreLocationSession: NSObject {
@@ -43,7 +43,7 @@ class CoreLocationSession: NSObject {
         // locationManager.startUpdatingLocation()
         
         startSigLocationChange()
-//       monitorRegion()
+        //       monitorRegion()
     }
     
     private func startSigLocationChange() {
@@ -68,18 +68,20 @@ class CoreLocationSession: NSObject {
         }
     }
     
-    public func placemarkToCoordinate(address: String) {
+    public func placemarkToCoordinate(address: String, completion: @escaping(Result<CLLocationCoordinate2D, Error>) -> ()) {
         // converting address to coordinates
         CLGeocoder().geocodeAddressString(address) { (placemark, error) in
             if let error = error {
                 print("geoaddresserror: \(error)")
+                completion(.failure(error))
             }
             if let firstPlacemark = placemark?.first ,
                 let location = firstPlacemark.location {
-                    print("coordinates: \(location.coordinate)")
-                }
+                print("coordinates: \(location.coordinate)")
+                completion(.success(location.coordinate))
             }
         }
+    }
     
     // setting up region : CLRegion (center coordinate and a radius in meters)
     public func monitorRegion() {
